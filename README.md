@@ -1,0 +1,2 @@
+### introduction
+this is a distrebuted app built using go, we'll use the course [Building Distributed Applications with Go](https://app.pluralsight.com/library/courses/building-distributed-applications-go/exercise-files) on pluralsights as a refrence, a starting point if you will, and try to improve on it as time goes by 
