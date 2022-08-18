@@ -1,6 +1,7 @@
 package service
 
 import (
+	"app/registry"
 	"context"
 	"fmt"
 	"log"
@@ -8,15 +9,20 @@ import (
 )
 
 // following is a function that will start the service
-func Start(ctx context.Context, serviceName, host, port string,
+func Start(ctx context.Context, host, port string, reg registry.Registration,
 	registerHandlersFunc func()) (context.Context, error) {
 	//we'll pass it a context, a service name, host and port, then the register func
-	registerHandlersFunc()                           //register the handler
-	ctx = startService(ctx, serviceName, host, port) //create a new context
-	return ctx, nil                                  //return that new ctx
+	registerHandlersFunc()                               //register the handler
+	ctx = startService(ctx, reg.ServiceName, host, port) //create a new context
+	err := registry.RegisterService(reg)                 //reach out to the registry servic
+	//and register reg
+	if err != nil { //handle errors
+		return ctx, err
+	}
+	return ctx, nil //return that new ctx
 }
 
-func startService(ctx context.Context, serviceName, host, port string) context.Context {
+func startService(ctx context.Context, serviceName registry.ServiceName, host, port string) context.Context {
 	//the function that will start the service
 	ctx, cancel := context.WithCancel(ctx) // another ctx derived from the recieved ctx
 	//that will have a cancel defined on it

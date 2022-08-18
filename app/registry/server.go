@@ -7,19 +7,8 @@ import (
 	"sync"
 )
 
-type ServiceName string
-
-type Registration struct {
-	ServiceName ServiceName
-	ServiceURL  string
-}
-
-const (
-	LogService = ServiceName("LogService")
-)
-
 const ServerPort = ":3000"
-const ServiceURL = "http://localhost" + ServerPort + "/services"
+const ServiceURL = "http://localhost:3000/services"
 
 type registry struct { //this struct type will contain a slice of registrations with a mutex
 	//so that we can controle writing so it
