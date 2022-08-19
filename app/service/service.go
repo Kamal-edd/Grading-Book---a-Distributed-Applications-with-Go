@@ -4,7 +4,7 @@ import (
 	"app/registry"
 	"context"
 	"fmt"
-	"log"
+	stlog "log"
 	"net/http"
 )
 
@@ -30,7 +30,7 @@ func startService(ctx context.Context, serviceName registry.ServiceName, host, p
 	srv.Addr = ":" + port //set it's address
 
 	go func() { //a routine to start our srv
-		log.Println(srv.ListenAndServe()) //start up and, call the Listen and Serve on that Server
+		stlog.Println(srv.ListenAndServe()) //start up and, call the Listen and Serve on that Server
 		//if that returns, it means we have an error fromtrying to start up a server
 		cancel() //and so we'll cancel
 	}()
@@ -38,8 +38,12 @@ func startService(ctx context.Context, serviceName registry.ServiceName, host, p
 		fmt.Printf("%v started. Press any key to stop.\n", serviceName) //print a msg
 		var s string                                                    //create a variable
 		fmt.Scanln(&s)                                                  //scan into it
-		srv.Shutdown(ctx)                                               //shutdown the srv ctx
-		cancel()                                                        //cancel
+		err := registry.ShutdownService(fmt.Sprintf("http://%v:%v", host, port))
+		if err != nil {
+			stlog.Println(err)
+		}
+		srv.Shutdown(ctx) //shutdown the srv ctx
+		cancel()          //cancel
 	}()
 	return ctx
 }

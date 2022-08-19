@@ -19,10 +19,25 @@ func RegisterService(r Registration) error {
 	if err != nil { //handle posting error
 		return err
 	}
-	if res.StatusCode != 200 {
-		return fmt.Errorf("failed to register, registry service"+
-			"responds with code %v", res.StatusCode)
+	if res.StatusCode != http.StatusOK {
+		return fmt.Errorf("failed to register, registry service "+
+			"of URL %v"+
+			" responds with code %v", ServiceURL, res.StatusCode)
 	}
 	return nil
-
+}
+func ShutdownService(ServiceURL string) error {
+	req, err := http.NewRequest(http.MethodDelete,
+		ServiceURL,
+		bytes.NewBuffer([]byte(ServiceURL)))
+	if err != nil {
+		return err
+	}
+	req.Header.Add("Content-Type", "text/plain")
+	res, err := http.DefaultClient.Do(req)
+	if res.StatusCode != http.StatusOK {
+		return fmt.Errorf("failed to deregister service. Registsy "+
+			"service responds with code %v", res.StatusCode)
+	}
+	return err
 }

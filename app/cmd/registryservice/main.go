@@ -12,8 +12,8 @@ func main() {
 	http.Handle("/sevices", &registry.RegistryService{}) //call the regestry service
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	var srv http.Server            //create a server object
-	srv.Addr = registry.ServerPort //set it's address
+	var srv http.Server         //create a server object
+	srv.Addr = "localhost:3000" //registry.ServerPort //set it's address
 
 	go func() { //a routine to start our srv
 		log.Println(srv.ListenAndServe()) //start up and, call the Listen and Serve on that Server
@@ -21,12 +21,12 @@ func main() {
 		cancel() //and so we'll cancel
 	}()
 	go func() { //a routine that will allow us to cancel
-		fmt.Printf("Regisry service started. Press any key to stop.\n") //print a msg
-		var s string                                                    //create a variable
-		fmt.Scanln(&s)                                                  //scan into it
-		srv.Shutdown(ctx)                                               //shutdown the srv ctx
-		cancel()                                                        //cancel
+		fmt.Printf("Regisry service started. Press any key to stop %v.\n", srv.Addr) //print a msg
+		var s string                                                                 //create a variable
+		fmt.Scanln(&s)                                                               //scan into it
+		srv.Shutdown(ctx)                                                            //shutdown the srv ctx
+		cancel()                                                                     //cancel
 	}()
 	<-ctx.Done()
-	fmt.Println("Registry service has shut down")
+	fmt.Println("Registry service has shut down %v", srv.Addr)
 }
