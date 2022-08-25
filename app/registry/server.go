@@ -21,12 +21,12 @@ const (
 )
 
 const ServerPort = "3000"
-const ServiceURL = "http://localhost:3000/services"
+const ServicesURL = "http://localhost" + ServerPort + "/services"
 
 type registry struct { //this struct type will contain a slice of registrations with a mutex
 	//so that we can controle writing so it
 	registration []Registration
-	mutex        *sync.Mutex
+	mutex        *sync.RWMutex
 }
 
 func (r *registry) add(reg Registration) error { //this method will attempt to write to a
@@ -49,7 +49,7 @@ func (r *registry) remove(url string) error { //this method removes a registry
 	return fmt.Errorf("sorry, service URL %v not found", url)
 }
 
-var reg = registry{registration: make([]Registration, 0), mutex: new(sync.Mutex)}
+var reg = registry{registration: make([]Registration, 0), mutex: new(sync.RWMutex)}
 
 type RegistryService struct{}
 
@@ -89,6 +89,5 @@ func (s RegistryService) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		}
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
 	}
 }

@@ -14,7 +14,7 @@ func RegisterService(r Registration) error {
 	if err != nil {             //handle encoring error
 		return err
 	}
-	res, err := http.Post(ServiceURL, "application/json", buf)
+	res, err := http.Post(r.ServiceURL, "application/json", buf)
 	//post the encoded registration to the service
 	if err != nil { //handle posting error
 		return err
@@ -22,7 +22,7 @@ func RegisterService(r Registration) error {
 	if res.StatusCode != http.StatusOK {
 		return fmt.Errorf("failed to register, registry service "+
 			"of URL %v"+
-			" responds with code %v", ServiceURL, res.StatusCode)
+			" responds with code %v", r.ServiceURL, res.StatusCode)
 	}
 	return nil
 }
