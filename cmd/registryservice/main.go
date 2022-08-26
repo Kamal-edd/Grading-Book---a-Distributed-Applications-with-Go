@@ -1,37 +1,36 @@
 package main
 
 import (
-	"app/registry"
 	"context"
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/Kamal-edd/Grading-Book-app/registry"
 )
 
 func main() {
-
-	http.Handle("/services", &registry.RegistryService{}) //call the regestry service
+	http.Handle("/services", &registry.RegistryService{})
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	var srv http.Server //create a server object
-	srv.Addr = ":3000"  //registry.ServerPort //set it's address
+	var srv http.Server
+	srv.Addr = ":3000"
 
-	go func() { //a routine to start our srv
-		log.Println(srv.ListenAndServe()) //start up and, call the Listen and Serve on that Server
-		//if that returns, it means we have an error fromtrying to start up a server
-		cancel() //and so we'll cancel
+	go func() {
+		log.Println(srv.ListenAndServe())
+		cancel()
 	}()
 
-	go func() { //a routine that will allow us to cancel
-		fmt.Printf("Regisry service started. Press any key to stop %v.\n", srv.Addr) //print a msg
-		var s string                                                                 //create a variable
-		fmt.Scanln(&s)                                                               //scan into it
-		srv.Shutdown(ctx)                                                            //shutdown the srv ctx
-		cancel()                                                                     //cancel
+	go func() {
+		fmt.Println("Registry service started. Press any key to stop.")
+		var s string
+		fmt.Scanln(&s)
+		srv.Shutdown(ctx)
+		cancel()
 	}()
 
 	<-ctx.Done()
-	fmt.Println("Registry service has shut down %v", srv.Addr)
+	fmt.Println("Shutting down registry service")
 }

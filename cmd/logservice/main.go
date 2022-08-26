@@ -1,32 +1,37 @@
 package main
 
 import (
-	"app/log"
-	"app/registry"
-	"app/service"
 	"context"
 	"fmt"
 	stlog "log"
+
+	"github.com/Kamal-edd/Grading-Book-app/log"
+	"github.com/Kamal-edd/Grading-Book-app/registry"
+	"github.com/Kamal-edd/Grading-Book-app/service"
 )
 
 func main() {
-	log.Run("./app.log")              //run the log
-	host, port := "localhost", "4000" //hardcode the host and port
-	serviceAdress := fmt.Sprintf("http://%v:%v", host, port)
+	log.Run("./app.log")
+
+	host, port := "localhost", "4000"
+	serviceAddress := fmt.Sprintf("http://%v:%v", host, port)
 
 	var r registry.Registration
 	r.ServiceName = registry.LogService
-	r.ServiceURL = serviceAdress
+	r.ServiceURL = serviceAddress
+	r.RequiredServices = make([]registry.ServiceName, 0)
+	r.ServiceUpdateURL = r.ServiceURL + "/services"
 
-	ctx, err := service.Start( //call start the service
-		context.Background(),
-		host, port,
+	ctx, err := service.Start(context.Background(),
+		host,
+		port,
 		r,
-		log.RegisterHandlers,
-	)
-	if err != nil { //handle errors
+		log.RegisterHandlers)
+	if err != nil {
 		stlog.Fatal(err)
 	}
-	<-ctx.Done()                                 //when the ctx is done, it means it's been closed. Time to move on !!
-	fmt.Println("Shutting down Log Service Yo!") //move on msg ;)
+
+	<-ctx.Done()
+	fmt.Println("Shutting down log service")
+
 }
