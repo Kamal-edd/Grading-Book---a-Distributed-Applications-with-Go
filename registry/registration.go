@@ -3,6 +3,7 @@ package registry
 type Registration struct {
 	ServiceName      ServiceName
 	ServiceURL       string
+	HeartbeatURL     string
 	RequiredServices []ServiceName
 	ServiceUpdateURL string
 }

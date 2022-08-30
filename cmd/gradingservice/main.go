@@ -18,7 +18,8 @@ func main() {
 	var r registry.Registration
 	r.ServiceName = registry.GradingService
 	r.ServiceURL = serviceAddress
-	r.RequiredServices = []registry.ServiceName{registry.LogService}
+	r.HeartbeatURL = r.ServiceURL + "/heartbeat"
+	r.RequiredServices = make([]registry.ServiceName, 0)
 	r.ServiceUpdateURL = r.ServiceURL + "/services"
 
 	ctx, err := service.Start(context.Background(),
@@ -30,10 +31,7 @@ func main() {
 		stlog.Fatal(err)
 	}
 	if logProvider, err := registry.GetProvider(registry.LogService); err == nil {
-		fmt.Printf("Logging service found at: %v\n", logProvider)
 		log.SetClientLogger(logProvider, r.ServiceName)
-	} else {
-		stlog.Println(err)
 	}
 
 	<-ctx.Done()
